@@ -4,9 +4,8 @@ using Domain;
 
 namespace Infrastructure;
 
-public class SubscriptionsService
+public class SubscriptionsService(DataContext context)
 {
-    DataContext context = new();
     public async Task<Subscription?> GetCompanySubscriptionsAsync(int id)
     {
         using var conn = context.GetNpgsqlConnection();

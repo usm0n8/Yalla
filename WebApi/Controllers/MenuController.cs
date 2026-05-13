@@ -6,62 +6,43 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MenuController : ControllerBase
+public class MenuController
 {
-    private readonly MenusService _service = new();
+    private readonly MenusService _service;
+    public MenuController(MenusService service)
+    {
+        _service = service;
+    }
 
     [HttpGet("active")]
-    public async Task<ActionResult<List<Menu>>> GetActiveMenuAsync()
+    public async Task<List<Menu>> GetActiveMenuAsync()
     {
-        var result = await _service.GetActiveMenuAsync();
-        return Ok(result);
+        return await _service.GetActiveMenuAsync();
     }
 
     [HttpGet("by-date")]
-    public async Task<ActionResult<Menu>> GetMenuByDateAsync(DateTime date)
+    public async Task<Menu?> GetMenuByDateAsync(DateTime date)
     {
-        var result = await _service.GetMenuByDateAsync(date);
-
-        if (result == null)
-        {
-            return NotFound("Menu not found");
-        }
-
-        return Ok(result);
+        return await _service.GetMenuByDateAsync(date);
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddMenu(Menu menu)
+    public async Task<bool> AddMenu(Menu menu)
     {
-        var result = await _service.AddMenu(menu);
-
-        if (!result)
-        {
-            return BadRequest("Menu not added");
-        }
-
-        return Ok("Menu added");
+        return await _service.AddMenu(menu);
     }
 
     [HttpPost("{menuId}/items")]
-    public async Task<ActionResult> AddMenuItemAsync(int menuId, MenuItem menu)
+    public async Task<bool> AddMenuItemAsync(int menuId, MenuItem menu)
     {
         menu.MenuId = menuId;
 
-        var result = await _service.AddMenuItemAsync(menuId, menu);
-
-        if (!result)
-        {
-            return BadRequest("Menu item not added");
-        }
-
-        return Ok("Menu item added");
+        return await _service.AddMenuItemAsync(menuId, menu);
     }
 
     [HttpGet("categories")]
-    public async Task<ActionResult<List<MenuItem>>> GetMenuCategoriesAsync()
+    public async Task<List<MenuItem>> GetMenuCategoriesAsync()
     {
-        var result = await _service.GetMenuCategoriesAsync();
-        return Ok(result);
+        return await _service.GetMenuCategoriesAsync();
     }
 }

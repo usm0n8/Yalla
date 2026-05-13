@@ -6,56 +6,37 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrdersController : ControllerBase
+public class OrdersController
 {
-    private readonly orderService _service = new();
+    private readonly orderService _service;
+    public OrdersController(orderService service)
+    {
+        _service = service;
+    }
 
     [HttpGet("company/{id}")]
-    public async Task<ActionResult<Order>> GetCompanyOrdersAsync(int id)
+    public async Task<Order?> GetCompanyOrdersAsync(int id)
     {
-        var result = await _service.GetCompanyOrdersAsync(id);
-
-        if (result == null)
-        {
-            return NotFound("Order not found");
-        }
-
-        return Ok(result);
+        return await _service.GetCompanyOrdersAsync(id);
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateOrderAsync(Order order)
+    public async Task<bool> CreateOrderAsync(Order order)
     {
-        var result = await _service.CreateOrderAsync(order);
-
-        if (!result)
-        {
-            return BadRequest("Order not created");
-        }
-
-        return Ok("Order created");
+        return await _service.CreateOrderAsync(order);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateOrder(int id, Order order)
+    public async Task<bool> UpdateOrder(int id, Order order)
     {
         order.Id = id;
 
-        var result = await _service.UpdateOrder(order);
-
-        if (!result)
-        {
-            return BadRequest("Order not updated");
-        }
-
-        return Ok("Order updated");
+        return await _service.UpdateOrder(order);
     }
 
     [HttpGet("daily-summary")]
-    public async Task<ActionResult<decimal>> GetDailySummaryAsync(DateTime date)
+    public async Task<decimal> GetDailySummaryAsync(DateTime date)
     {
-        var result = await _service.GetDailySummaryAsync(date);
-
-        return Ok(result);
+        return await _service.GetDailySummaryAsync(date);
     }
 }

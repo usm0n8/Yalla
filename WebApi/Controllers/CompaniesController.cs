@@ -6,15 +6,19 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CompaniesController : ControllerBase
+public class CompaniesController
 {
-    private readonly CompniesServer _service = new();
+    private readonly CompaniesService _service;
+
+    public CompaniesController(CompaniesService service)
+    {
+        _service = service;
+    }
 
     [HttpGet]
     public async Task<ActionResult<List<Company>>> GetCompanies()
     {
-        var result = await _service.GetCompanies();
-        return Ok(result);
+        return await _service.GetCompanies();
     }
 
     [HttpGet("{id}")]
@@ -22,52 +26,26 @@ public class CompaniesController : ControllerBase
     {
         var result = await _service.GetCompaniebyId(id);
 
-        if (result == null)
-        {
-            return NotFound("Company not found");
-        }
-
-        return Ok(result);
+        return result;
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddCompany(Company company)
+    public async Task<bool> AddCompany(Company company)
     {
-        var result = await _service.AddCompany(company);
-
-        if (!result)
-        {
-            return BadRequest("Company not added");
-        }
-
-        return Ok("Company added");
+        return await _service.AddCompany(company);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateCompany(int id, Company company)
+    public async Task<bool> UpdateCompany(int id, Company company)
     {
         company.Id = id;
 
-        var result = await _service.UpdateCompany(company);
-
-        if (!result)
-        {
-            return BadRequest("Company not updated");
-        }
-
-        return Ok("Company updated");
+        return await _service.UpdateCompany(company);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteCompany(int id)
+    public async Task<bool> DeleteCompany(int id)
     {
-        var result = await _service.DeletCompany(id);
-
-        if (!result)
-        {
-            return NotFound("Company not found");
-        }
-
-        return Ok("Company deleted");
+        return await _service.DeletCompany(id);
     }
 }

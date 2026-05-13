@@ -6,54 +6,35 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SubscriptionsController : ControllerBase
+public class SubscriptionsController
 {
-    private readonly SubscriptionsService _service = new();
+    private readonly SubscriptionsService _service;
+    public SubscriptionsController(SubscriptionsService service)
+    {
+        _service = service;
+    }
 
     [HttpGet("company/{id}")]
-    public async Task<ActionResult<Subscription>> GetCompanySubscriptionsAsync(int id)
+    public async Task<Subscription?> GetCompanySubscriptionsAsync(int id)
     {
-        var result = await _service.GetCompanySubscriptionsAsync(id);
-
-        if (result == null)
-        {
-            return NotFound("Subscription not found");
-        }
-
-        return Ok(result);
+        return await _service.GetCompanySubscriptionsAsync(id);
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateSubscriptionAsync(Subscription subscription)
+    public async Task<bool> CreateSubscriptionAsync(Subscription subscription)
     {
-        var result = await _service.CreateSubscriptionAsync(subscription);
-
-        if (!result)
-        {
-            return BadRequest("Subscription not created");
-        }
-
-        return Ok("Subscription created");
+        return await _service.CreateSubscriptionAsync(subscription);
     }
 
     [HttpPut("{id}/status")]
-    public async Task<ActionResult> UpdateSubscriptionStatusAsync(int id, bool isActive)
+    public async Task<bool> UpdateSubscriptionStatusAsync(int id, bool isActive)
     {
-        var result = await _service.UpdateSubscriptionStatusAsync(id, isActive);
-
-        if (!result)
-        {
-            return BadRequest("Subscription not updated");
-        }
-
-        return Ok("Subscription updated");
+        return await _service.UpdateSubscriptionStatusAsync(id, isActive);
     }
 
     [HttpGet("active")]
-    public async Task<ActionResult<List<Subscription>>> GetActiveSubscriptionsAsync()
+    public async Task<List<Subscription>> GetActiveSubscriptionsAsync()
     {
-        var result = await _service.GetActiveSubscriptionsAsync();
-
-        return Ok(result);
+        return await _service.GetActiveSubscriptionsAsync();
     }
 }
